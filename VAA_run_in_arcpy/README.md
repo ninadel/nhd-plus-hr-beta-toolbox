@@ -31,7 +31,7 @@ The input parameters are:
 ## Outputs
 This script will generate:
 * A folder in the workspace with the name 'NHDPLUS_H_[HUC4]\_HU4_GDD_RESULT' where HUC4 is the 4-digit HUC4 from parameter_gdb_location
-* A geodatabase in the above folder with the name NHDPLUS_H_[HUC4]\__HU4_GDD_RESULT.gdb where HUC4 is the 4-digit HUC4 from parameter_gdb_location
+* A geodatabase in the above folder with the name NHDPLUS_H_[HUC4]\_HU4_GDD_RESULT.gdb where HUC4 is the 4-digit HUC4 from parameter_gdb_location
 * A feature class in the above geodatabase named StartFeatures_Segments
 * A feature class in the above geodatabase named StartFeatures_Streams  (if parameter_dissolve_streams is true)
 * A feature dataset in the above geodatabase named Tributaries (if tributaries are found)
