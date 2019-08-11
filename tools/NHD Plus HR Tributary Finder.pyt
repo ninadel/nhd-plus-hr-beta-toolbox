@@ -1,5 +1,6 @@
 import arcpy
 
+from tools.TributaryFinder import TributaryFinder
 
 class Toolbox(object):
     def __init__(self):

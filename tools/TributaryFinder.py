@@ -1,11 +1,10 @@
-import os
-import math
+# import os
+# import math
 import arcpy
-import config
+# import config
 import arguments
-import methods.initialization
-import methods.trigonometry
-import methods.quality_assurance
+# import methods.initialization
+# import methods.quality_assurance
 
 class TributaryFinder(object):
     # def __init__(self):
@@ -20,54 +19,17 @@ class TributaryFinder(object):
         self.label = "NHD Plus HR Tributary Finder"
         self.description = ""
         self.canRunInBackground = True
+        self.params = arcpy.GetParameterInfo()
 
     def getParameterInfo(self):
         """Define parameter definitions"""
+        param0 = arguments.arcpy_parameter.required_max_level
+        # param1
+        # param2
 
-        # First parameter
-        parameter_output_location = arcpy.Parameter(
-            displayName="parameter_output_location displayname",
-            name="parameter_output_location name",
-            datatype="GPFeatureLayer",
-            parameterType="Required",
-            direction="Input")
+        params = [
+            param0]
 
-        parameter_gdb_location = arcpy.Parameter(
-            displayName="parameter_gdb_location displayname",
-            name="parameter_gdb_location name",
-            datatype="GPFeatureLayer",
-            parameterType="Required",
-            direction="Input")
-
-        parameter_start_feature = arcpy.Parameter(
-            displayName="parameter_start_feature displayname",
-            name="parameter_start_feature name",
-            datatype="GPFeatureLayer",
-            parameterType="Required",
-            direction="Input")
-
-        parameter_all_levels = arcpy.Parameter(
-            displayName="parameter_all_levels displayname",
-            name="parameter_all_levels name",
-            datatype="GPFeatureLayer",
-            parameterType="Required",
-            direction="Input")
-
-        parameter_max_level = arcpy.Parameter(
-            displayName="parameter_max_level displayname",
-            name="parameter_max_level name",
-            datatype="GPFeatureLayer",
-            parameterType="Required",
-            direction="Input")
-
-        parameter_dissolve_streams = arcpy.Parameter(
-            displayName="parameter_dissolve_streams displayname",
-            name="parameter_all_levels name",
-            datatype="GPFeatureLayer",
-            parameterType="Required",
-            direction="Input")
-
-        params = [parameter_output_location, parameter_gdb_location, parameter_start_feature, parameter_all_levels, parameter_max_level, parameter_dissolve_streams]
         return params
 
     def isLicensed(self):

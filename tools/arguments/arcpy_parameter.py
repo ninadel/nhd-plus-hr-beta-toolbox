@@ -17,18 +17,23 @@ required_start_stream_linear_feature = arcpy.Parameter(
     direction="Input")
 
 #   output_folder - folder where results will be saved
-output_folder = arcpy.Parameter(
+required_output_folder = arcpy.Parameter(
     displayName = 'Output Folder',
     name = 'output_folder',
     datatype = 'DEFolder',
     parameterType = 'Required',
     direction = 'Input')
 
-#   all_levels - TBD
-
 #   max_level - TBD
+required_max_level = arcpy.Parameter(
+    displayName = 'Maximum Stream Level',
+    name = 'output_file_name',
+    datatype = 'GPLong',
+    parameterType = 'Required',
+    direction = 'Input')
 
 #   dissolve_streams - TBD
+#   this parameter, if implemented, would allow the user to select whether the final result will dissolve/aggregate streams; if false, stream segments would remain unaggregated
 
 # COPIED FROM vaa_tributary_finder
 #   parameter_start_feature - linear feature class or shapefile of streams
