@@ -1,20 +1,14 @@
-# import os
-# import math
 import arcpy
-# import config
 import arguments
-# import methods.initialization
-# import methods.quality_assurance
+import config
+import os
+import math
+import methods.initialization
+import methods.quality_assurance
 
 class TributaryFinder(object):
-    # def __init__(self):
-    #     """Define the tool (tool name is the name of the class)."""
-    #     self.label = "Create Cross Sections General"
-    #     self.description = ""
-    #     self.canRunInBackground = False
-    #     self.params = arcpy.GetParameterInfo()
 
-     def __init__(self):
+    def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "NHD Plus HR Tributary Finder"
         self.description = ""

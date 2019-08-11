@@ -3,21 +3,20 @@ import os
 import csv
 import arcpy
 
-
 # copied from cross-section-creation
+from tools.TributaryFinder import TributaryFinder
 # from tools.GCMRC import GCMRC_CreateCrossSections
 # from tools.GeneralUse import GeneralUseCreateCrossSections
 #
-# class Toolbox(object):
-#     def __init__(self):
-#         """Define the toolbox (the name of the toolbox is the name of the
-#         .pyt file)."""
-#         self.label = "Cross Section Creation"
-#         self.alias = "Cross Section Creation"
-#
-#         # List of tool classes associated with this toolbox
-#         self.tools = [GCMRC_CreateCrossSections,
-#                       GeneralUseCreateCrossSections]
+class Toolbox(object):
+    def __init__(self):
+        """Define the toolbox (the name of the toolbox is the name of the
+        .pyt file)."""
+        self.label = "Tributary Finder"
+        self.alias = "Tributary Finder"
+
+        # List of tool classes associated with this toolbox
+        self.tools = [TributaryFinder]
 
 # OLD - delete when done
 # class Toolbox(object):
