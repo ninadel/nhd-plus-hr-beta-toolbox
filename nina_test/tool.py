@@ -44,8 +44,6 @@ parameter_all_levels = False
 parameter_max_level = 7
 parameter_dissolve_streams = True
 
-arcpy.env.workspace = parameter_output_location
-
 original_dataset_name = 'Hydrography'
 original_nhdflowline_name = 'NHDFlowline'
 original_vaatable_name = 'NHDPlusFlowlineVAA'
@@ -388,106 +386,108 @@ def process_pfcode_fields(fc, pfcode_fields):
         selection_type="CLEAR_SELECTION")
 
 ### END FUNCTIONS ###
-### START PROCESSING ###
-### Processing Phase 1: Prepare files
-print('Processing Phase 0: Create local parameters')
 
-# retrieve path based on parameter_gdb_location and dataset name
-original_dataset_location = get_location(parameter_gdb_location, original_dataset_name)
-# retrieve path based on parameter_gdb_location and fc name
-original_nhdflowline_location = get_location(original_dataset_location, original_nhdflowline_name)
-# retrieve path based on parameter_gdb_location and table name
-original_vaatable_location = get_location(parameter_gdb_location, original_vaatable_name)
-# takes the rootname of parameter_gdb_location and
-gdb_original_rootname = get_fname(parameter_gdb_location)
-# get name of result directory
-result_rootname = gdb_original_rootname + result_suffix
-# get pathname of result directory
-result_subdir_location = get_location(arcpy.env.workspace, result_rootname)
-# determine path of result directory
-result_gdb_location = get_location(result_subdir_location, result_rootname, '.gdb')
-# determine name of result geodatabase
-result_gdb_filename = get_fname(result_gdb_location)
-# get pathnames of result feature classes
-result_dataset_location = get_location(result_gdb_location, result_dataset_name)
-result_startfeatures_segments_location = get_location(result_gdb_location, result_startfeatures_segments_fcname)
-result_startfeatures_dissolved_location = get_location(result_gdb_location, result_startfeatures_dissolved_fcname)
-result_tributaries_segments_location = get_location(result_dataset_location, result_tributaries_segments_fcname)
-result_tributaries_dissolved_location = get_location(result_dataset_location, result_tributaries_dissolved_fcname)
+def start(parameters):
+    ### START PROCESSING ###
+    ### Processing Phase 1: Prepare files
+    print('Processing Phase 0: Create local parameters')
+    arcpy.env.workspace = parameters["output_folder"]
+    # retrieve path based on parameter_gdb_location and dataset name
+    original_dataset_location = get_location(parameters["gdb_location"], original_dataset_name)
+    # retrieve path based on parameter_gdb_location and fc name
+    original_nhdflowline_location = get_location(original_dataset_location, original_nhdflowline_name)
+    # retrieve path based on parameter_gdb_location and table name
+    original_vaatable_location = get_location(parameters["gdb_location"], original_vaatable_name)
+    # takes the rootname of parameter_gdb_location and
+    gdb_original_rootname = get_fname(parameters["gdb_location"])
+    # get name of result directory
+    result_rootname = gdb_original_rootname + result_suffix
+    # get pathname of result directory
+    result_subdir_location = get_location(arcpy.env.workspace, result_rootname)
+    # determine path of result directory
+    result_gdb_location = get_location(result_subdir_location, result_rootname, '.gdb')
+    # determine name of result geodatabase
+    result_gdb_filename = get_fname(result_gdb_location)
+    # get pathnames of result feature classes
+    result_dataset_location = get_location(result_gdb_location, result_dataset_name)
+    result_startfeatures_segments_location = get_location(result_gdb_location, result_startfeatures_segments_fcname)
+    result_startfeatures_dissolved_location = get_location(result_gdb_location, result_startfeatures_dissolved_fcname)
+    result_tributaries_segments_location = get_location(result_dataset_location, result_tributaries_segments_fcname)
+    result_tributaries_dissolved_location = get_location(result_dataset_location, result_tributaries_dissolved_fcname)
 
-### Processing Phase 1: Pre-tests
-print('Processing Phase 1: Pre-tests')
-# do usable start features exist
-start_nhdplusids = find_start_features(original_nhdflowline_location, parameter_start_feature, result_startfeatures_segments_location)
-# if there are usable start features
-if len(start_nhdplusids) > 0:
-    # find tributaries that match parameters, if any
-    vaa_lists = get_vaa_lists(original_nhdflowline_name, original_vaatable_location, start_nhdplusids, parameter_all_levels,
-                              parameter_max_level)
-    start_features_hydroseq_list = vaa_lists[0]
-    vaa_path_id_list = vaa_lists[1]
-    vaa_hydroseq_list = vaa_lists[2]
-    starting_tributaries_paths = get_starting_tributaries(start_features_hydroseq_list, vaa_hydroseq_list)
-    all_tributaries_paths = get_all_tributaries_from_path(starting_tributaries_paths, vaa_path_id_list)
-    # if tributaries exist
-    if len(all_tributaries_paths) > 0:
-        ### Processing Phase 2: Prepare files
-        print('Processing Phase 2: Prepare files')
-        os.mkdir(result_subdir_location)
-        arcpy.CreateFileGDB_management(
-            out_folder_path=result_subdir_location,
-            out_name=result_gdb_filename,
-            out_version="CURRENT")
-        print(result_gdb_filename + ' created')
-        arcpy.CreateFeatureDataset_management(
-            out_dataset_path=result_gdb_location,
-            out_name=result_dataset_name,
-            spatial_reference=original_dataset_location)
-        print(result_dataset_name + ' dataset created')
-        ### Processing Phase 3: Export Tributaries
-        print('Processing Phase 3: Export Start Features and Tributaries')
-        # TEST DISABLED
-        # export_start_features(original_nhdflowline_location, start_nhdplusids, result_startfeatures_segments_location)
-        export_matching_paths(original_nhdflowline_name, original_vaatable_location, all_tributaries_paths,
-                              result_tributaries_segments_location)
-        ### Processing Phase 4: Add fields
-        print('Processing Phase 4: Add fields')
-        # TEST DISABLED
-        # add_fields(result_startfeatures_segments_fcname, vaa_segment_fields)
-        # add_fields(result_startfeatures_segments_fcname, fcode_gnisid_fields)
-        # add_fields(result_startfeatures_segments_fcname, fcode_pathid_fields)
-        add_fields(result_tributaries_segments_fcname, vaa_segment_fields)
-        add_fields(result_tributaries_segments_fcname, fcode_gnisid_fields)
-        add_fields(result_tributaries_segments_fcname, fcode_pathid_fields)
-        ### Processing Phase 5: Process fields
-        print('Processing Phase 5: Process fields')
-        # TEST DISABLED
-        # copy_vaa_values(result_startfeatures_segments_fcname, original_vaatable_location, vaa_segment_fields)
-        # process_gfcode_fields(result_startfeatures_segments_fcname, fcode_gnisid_fields)
-        # process_pfcode_fields(result_startfeatures_segments_fcname, fcode_pathid_fields)
-        copy_vaa_values(result_tributaries_segments_fcname, original_vaatable_location, vaa_segment_fields)
-        process_gfcode_fields(result_tributaries_segments_fcname, fcode_gnisid_fields)
-        process_pfcode_fields(result_tributaries_segments_fcname, fcode_pathid_fields)
-        if parameter_dissolve_streams:
-            ### Processing Phase 6: Dissolve to streams
-            print('Processing Phase 6: Dissolve to streams')
+    ### Processing Phase 1: Pre-tests
+    print('Processing Phase 1: Pre-tests')
+    # do usable start features exist
+    start_nhdplusids = find_start_features(original_nhdflowline_location, parameters["start_features"], result_startfeatures_segments_location)
+    # if there are usable start features
+    if len(start_nhdplusids) > 0:
+        # find tributaries that match parameters, if any
+        vaa_lists = get_vaa_lists(original_nhdflowline_name, original_vaatable_location, start_nhdplusids, parameter_all_levels,
+                                  parameters["max_level"])
+        start_features_hydroseq_list = vaa_lists[0]
+        vaa_path_id_list = vaa_lists[1]
+        vaa_hydroseq_list = vaa_lists[2]
+        starting_tributaries_paths = get_starting_tributaries(start_features_hydroseq_list, vaa_hydroseq_list)
+        all_tributaries_paths = get_all_tributaries_from_path(starting_tributaries_paths, vaa_path_id_list)
+        # if tributaries exist
+        if len(all_tributaries_paths) > 0:
+            ### Processing Phase 2: Prepare files
+            print('Processing Phase 2: Prepare files')
+            os.mkdir(result_subdir_location)
+            arcpy.CreateFileGDB_management(
+                out_folder_path=result_subdir_location,
+                out_name=result_gdb_filename,
+                out_version="CURRENT")
+            print(result_gdb_filename + ' created')
+            arcpy.CreateFeatureDataset_management(
+                out_dataset_path=result_gdb_location,
+                out_name=result_dataset_name,
+                spatial_reference=original_dataset_location)
+            print(result_dataset_name + ' dataset created')
+            ### Processing Phase 3: Export Tributaries
+            print('Processing Phase 3: Export Start Features and Tributaries')
             # TEST DISABLED
-            # arcpy.SelectLayerByAttribute_management(
-            #     in_layer_or_view=result_startfeatures_segments_fcname,
-            #     selection_type="CLEAR_SELECTION")
-            # arcpy.Dissolve_management(
-            #     in_features=result_startfeatures_segments_fcname,
-            #     out_feature_class=result_startfeatures_dissolved_location,
-            #     dissolve_field=dissolve_fields)
-            arcpy.SelectLayerByAttribute_management(
-                in_layer_or_view=result_tributaries_segments_fcname,
-                selection_type="CLEAR_SELECTION")
-            arcpy.Dissolve_management(
-                in_features=result_tributaries_segments_fcname,
-                out_feature_class=result_tributaries_dissolved_location,
-                dissolve_field=dissolve_fields)
+            # export_start_features(original_nhdflowline_location, start_nhdplusids, result_startfeatures_segments_location)
+            export_matching_paths(original_nhdflowline_name, original_vaatable_location, all_tributaries_paths,
+                                  result_tributaries_segments_location)
+            ### Processing Phase 4: Add fields
+            print('Processing Phase 4: Add fields')
+            # TEST DISABLED
+            # add_fields(result_startfeatures_segments_fcname, vaa_segment_fields)
+            # add_fields(result_startfeatures_segments_fcname, fcode_gnisid_fields)
+            # add_fields(result_startfeatures_segments_fcname, fcode_pathid_fields)
+            add_fields(result_tributaries_segments_fcname, vaa_segment_fields)
+            add_fields(result_tributaries_segments_fcname, fcode_gnisid_fields)
+            add_fields(result_tributaries_segments_fcname, fcode_pathid_fields)
+            ### Processing Phase 5: Process fields
+            print('Processing Phase 5: Process fields')
+            # TEST DISABLED
+            # copy_vaa_values(result_startfeatures_segments_fcname, original_vaatable_location, vaa_segment_fields)
+            # process_gfcode_fields(result_startfeatures_segments_fcname, fcode_gnisid_fields)
+            # process_pfcode_fields(result_startfeatures_segments_fcname, fcode_pathid_fields)
+            copy_vaa_values(result_tributaries_segments_fcname, original_vaatable_location, vaa_segment_fields)
+            process_gfcode_fields(result_tributaries_segments_fcname, fcode_gnisid_fields)
+            process_pfcode_fields(result_tributaries_segments_fcname, fcode_pathid_fields)
+            if parameter_dissolve_streams:
+                ### Processing Phase 6: Dissolve to streams
+                print('Processing Phase 6: Dissolve to streams')
+                # TEST DISABLED
+                # arcpy.SelectLayerByAttribute_management(
+                #     in_layer_or_view=result_startfeatures_segments_fcname,
+                #     selection_type="CLEAR_SELECTION")
+                # arcpy.Dissolve_management(
+                #     in_features=result_startfeatures_segments_fcname,
+                #     out_feature_class=result_startfeatures_dissolved_location,
+                #     dissolve_field=dissolve_fields)
+                arcpy.SelectLayerByAttribute_management(
+                    in_layer_or_view=result_tributaries_segments_fcname,
+                    selection_type="CLEAR_SELECTION")
+                arcpy.Dissolve_management(
+                    in_features=result_tributaries_segments_fcname,
+                    out_feature_class=result_tributaries_dissolved_location,
+                    dissolve_field=dissolve_fields)
+        else:
+            print('Checks complete - No tributaries found')
     else:
-        print('Checks complete - No tributaries found')
-else:
-    print('Checks complete - No matching start features found')
-### END PROCESSING ###
+        print('Checks complete - No matching start features found')
+    ### END PROCESSING ###
