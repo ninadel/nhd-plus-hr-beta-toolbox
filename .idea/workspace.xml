@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0895a5f8-a11a-4635-96a3-25eb853c6180" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nina_test/tool.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VAA_run_in_arcpy/vaa_tributary_finder_20190502.py" beforeDir="false" afterPath="$PROJECT_DIR$/VAA_run_in_arcpy/vaa_tributary_finder_20190502.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/NHD Plus HR Tools.pyt" beforeDir="false" afterPath="$PROJECT_DIR$/tools/NHD Plus HR Tools.pyt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/old-discard-later/NHD Plus HR Tributary Finder OLD.pyt" beforeDir="false" afterPath="$PROJECT_DIR$/tools/old-discard-later/NHD Plus HR Tributary Finder OLD.pyt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/tool.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,6 +26,11 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/tools" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\neene\Documents\USGS Bitbucket\nhd-tributary-aggregation\tools" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -54,7 +55,7 @@
       <option name="presentableId" value="Default" />
       <updated>1567371178004</updated>
       <workItem from="1567371188081" duration="11436000" />
-      <workItem from="1567460163045" duration="7158000" />
+      <workItem from="1567460163045" duration="10584000" />
     </task>
     <servers />
   </component>

@@ -456,18 +456,18 @@ def start(parameters):
             # add_fields(result_startfeatures_segments_fcname, vaa_segment_fields)
             # add_fields(result_startfeatures_segments_fcname, fcode_gnisid_fields)
             # add_fields(result_startfeatures_segments_fcname, fcode_pathid_fields)
-            add_fields(result_tributaries_segments_fcname, vaa_segment_fields)
-            add_fields(result_tributaries_segments_fcname, fcode_gnisid_fields)
-            add_fields(result_tributaries_segments_fcname, fcode_pathid_fields)
+            add_fields(result_tributaries_segments_location, vaa_segment_fields)
+            add_fields(result_tributaries_segments_location, fcode_gnisid_fields)
+            add_fields(result_tributaries_segments_location, fcode_pathid_fields)
             ### Processing Phase 5: Process fields
             print('Processing Phase 5: Process fields')
             # TEST DISABLED
             # copy_vaa_values(result_startfeatures_segments_fcname, original_vaatable_location, vaa_segment_fields)
             # process_gfcode_fields(result_startfeatures_segments_fcname, fcode_gnisid_fields)
             # process_pfcode_fields(result_startfeatures_segments_fcname, fcode_pathid_fields)
-            copy_vaa_values(result_tributaries_segments_fcname, original_vaatable_location, vaa_segment_fields)
-            process_gfcode_fields(result_tributaries_segments_fcname, fcode_gnisid_fields)
-            process_pfcode_fields(result_tributaries_segments_fcname, fcode_pathid_fields)
+            copy_vaa_values(result_tributaries_segments_location, original_vaatable_location, vaa_segment_fields)
+            process_gfcode_fields(result_tributaries_segments_location, fcode_gnisid_fields)
+            process_pfcode_fields(result_tributaries_segments_location, fcode_pathid_fields)
             if parameter_dissolve_streams:
                 ### Processing Phase 6: Dissolve to streams
                 print('Processing Phase 6: Dissolve to streams')
