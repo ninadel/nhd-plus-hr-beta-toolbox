@@ -1,107 +1,14 @@
-# NHD Plus HR Tributary Finder v5
+# NHD Plus HR Tributary Finder v6
 # Author: Nina del Rosario
-# Last updated: 5/2/19
+# Last updated: 9/19/19
 # Dataset description: https://www.usgs.gov/core-science-systems/ngp/national-hydrography/nhdplus-high-resolution
-# Status: Revising from v4 (integrating all parameters, adding pre-checks, adding documentation notes)
-#
-# The purpose of this script is to select a tributary stream network based on a stream shapefile of starting features.
-#
-# The input parameters are:
-#   parameter_output_location - workspace where results will be saved
-#   parameter_gdb_location - geodatabase location of NHD Plus HR data
-#   parameter_start_feature - linear feature class or shapefile of streams
-#   parameter_all_levels - search tributaries in all StreamLevels?
-#   parameter_max_level - if parameter_all_levels is false, what is the highest StreamLevel to include?
-#   parameter_dissolve_streams - should stream segments be dissolved into streams (dissolved based on LevelPathI)?
-#
-# Requirements:
-# parameter_gdb_location must point to a GDB from the NHD Plus HR data dataset (unzipped vector data)
-# parameter_gdb_location must have a NHDPlusFlowlineVAA file geodatabase table
-# NHDPlusFlowlineVAA must have populated data in the following fields:
-#   HydroSeq, LevelPathI, TerminalPa, UpLevelPat, UpHydroSeq, DnLevel, DnLevelPat, DnHydroSeq
-#   Datasets prior to NHD Plus HR have a few of the above fields unpopulated
-# parameter_start_feature must have originated from the same dataset as parameter_gdb_location (NHD Plus HR)
-#   finding tributaries will be dependent on selecting segments in parameter_gdb_location/Hydrography/NHDFlowline which coincide (share a line segment) with parameter_start_feature
-# parameter_start_feature must have an overlapping extent with parameter_gdb_location/Hydrography/NHDFlowline
-#
-# This script will generate:
-#   A folder in the workspace with the name NHDPLUS_H_[HUC4]_HU4_GDD_RESULT where HUC4 is the 4-digit HUC4 from parameter_gdb_location
-#   A geodatabase in the above folder with the name NHDPLUS_H_[HUC4]_HU4_GDD_RESULT.gdb where HUC4 is the 4-digit HUC4 from parameter_gdb_location
-#   A feature class in the above geodatabase named StartFeatures_Segments
-#   A feature class in the above geodatabase named StartFeatures_Streams  (if parameter_dissolve_streams is true)
-#   A feature dataset in the above geodatabase named Tributaries (if tributaries are found)
-#   A feature class in the above dataset named Tributaries_Segments
-#   A feature class in the above dataset named Tributaries_Segments (if parameter_dissolve_streams is true)
-#   The feature classes generated will have added fields based on vaa_segment_fields, fcode_gnisid_fields, and fcode_pathid_fields
+# Status: Revising from vaa_tributary_finder_20100502.py
 
-import arcpy, os, time
+import arcpy
+import os
+import time
+import config
 
-### START GLOBAL PARAMETERS ###
-parameter_output_location = 'C:/Workspace/'
-parameter_gdb_location = 'D:/GCMRC/NHD Plus HR Process Datasets/00 Original Files/NHDPLUS_H_1501_HU4_GDB/NHDPLUS_H_1501_HU4_GDB.gdb'
-parameter_start_feature = 'D:/GCMRC/NHD Plus HR Process Datasets/Basin 15 Start Features/start_features_1501.shp'
-parameter_all_levels = False
-parameter_max_level = 7
-parameter_dissolve_streams = True
-
-original_dataset_name = 'Hydrography'
-original_nhdflowline_name = 'NHDFlowline'
-original_vaatable_name = 'NHDPlusFlowlineVAA'
-
-result_suffix = '_RESULT'
-result_dataset_name = 'Tributaries'
-result_startfeatures_segments_fcname = 'StartFeatures_Segments'
-result_startfeatures_dissolved_fcname = 'StartFeatures_Streams'
-result_tributaries_segments_fcname = 'Tributaries_Segments'
-result_tributaries_dissolved_fcname = 'Tributaries_Streams'
-
-vaa_segment_fields = [
-    # [FieldName, FieldDataType, FieldAlias]
-    ['StreamLeve', "SHORT", 'StreamLevel'],
-    ['HydroSeq', "DOUBLE", 'HydrologicSequence'],
-    ['LevelPathI', "DOUBLE", 'LevelPathIdentifier'],
-    ['TerminalPa', "DOUBLE", 'TerminalPathIdentifier'],
-    ['UpLevelPat', "DOUBLE", 'UpstreamMainPathLevelPathID'],
-    ['UpHydroSeq', "DOUBLE", 'UpstreamMainPathHydroSeq'],
-    ['DnLevel', "SHORT", 'DownstreamMainPathStreamLevel'],
-    ['DnLevelPat', "DOUBLE", 'DownstreamMainPathLevelPathID'],
-    ['DnHydroSeq', "DOUBLE", 'DownstreamMainPathHydroSeq']
-]
-
-fcode_gnisid_fields = [
-    ['G46000', "SHORT", 'GNISID_ContainsFCode46000'],
-    ['G46003', "SHORT", 'GNISID_ContainsFCode46003'],
-    ['G46006', "SHORT", 'GNISID_ContainsFCode46006'],
-    ['G46007', "SHORT", 'GNISID_ContainsFCode46007'],
-    ['G55800', "SHORT", 'GNISID_ContainsFCode55800']
-]
-
-fcode_pathid_fields = [
-    ['P46000', "SHORT", 'Path_ContainsFCode46000'],
-    ['P46003', "SHORT", 'Path_ContainsFCode46003'],
-    ['P46006', "SHORT", 'Path_ContainsFCode46006'],
-    ['P46007', "SHORT", 'Path_ContainsFCode46007'],
-    ['P55800', "SHORT", 'Path_ContainsFCode55800']
-]
-
-dissolve_fields = [
-    'GNIS_ID',
-    'GNIS_Name',
-    'StreamLeve',
-    'LevelPathI',
-    'G46000',
-    'G46003',
-    'G46006',
-    'G46007',
-    'G55800',
-    'P46000',
-    'P46003',
-    'P46006',
-    'P46007',
-    'P55800'
-]
-
-### END GLOBAL PARAMETERS ###
 ### START FUNCTIONS ###
 
 # given a file or feature class name, returns the path
@@ -393,15 +300,15 @@ def start(parameters):
     print('Processing Phase 0: Create local parameters')
     arcpy.env.workspace = parameters["output_folder"]
     # retrieve path based on parameter_gdb_location and dataset name
-    original_dataset_location = get_location(parameters["gdb_location"], original_dataset_name)
+    original_dataset_location = get_location(parameters["gdb_location"], config.original_dataset_name)
     # retrieve path based on parameter_gdb_location and fc name
-    original_nhdflowline_location = get_location(original_dataset_location, original_nhdflowline_name)
-    # retrieve path based on parameter_gdb_location and table name
-    original_vaatable_location = get_location(parameters["gdb_location"], original_vaatable_name)
+    original_nhdflowline_location = get_location(original_dataset_location, config.original_nhdflowline_name)
+    # retrieve path based on + and table name
+    original_vaatable_location = get_location(parameters["gdb_location"], config.original_vaatable_name)
     # takes the rootname of parameter_gdb_location and
     gdb_original_rootname = get_fname(parameters["gdb_location"])
     # get name of result directory
-    result_rootname = gdb_original_rootname + result_suffix
+    result_rootname = gdb_original_rootname + config.result_suffix
     # get pathname of result directory
     result_subdir_location = get_location(arcpy.env.workspace, result_rootname)
     # determine path of result directory
@@ -409,11 +316,11 @@ def start(parameters):
     # determine name of result geodatabase
     result_gdb_filename = get_fname(result_gdb_location)
     # get pathnames of result feature classes
-    result_dataset_location = get_location(result_gdb_location, result_dataset_name)
-    result_startfeatures_segments_location = get_location(result_gdb_location, result_startfeatures_segments_fcname)
-    result_startfeatures_dissolved_location = get_location(result_gdb_location, result_startfeatures_dissolved_fcname)
-    result_tributaries_segments_location = get_location(result_dataset_location, result_tributaries_segments_fcname)
-    result_tributaries_dissolved_location = get_location(result_dataset_location, result_tributaries_dissolved_fcname)
+    result_dataset_location = get_location(result_gdb_location, config.result_dataset_name)
+    result_startfeatures_segments_location = get_location(result_gdb_location, config.result_startfeatures_segments_fcname)
+    result_startfeatures_dissolved_location = get_location(result_gdb_location, config.result_startfeatures_dissolved_fcname)
+    result_tributaries_segments_location = get_location(result_dataset_location, config.result_tributaries_segments_fcname)
+    result_tributaries_dissolved_location = get_location(result_dataset_location, config.result_tributaries_dissolved_fcname)
 
     ### Processing Phase 1: Pre-tests
     print('Processing Phase 1: Pre-tests')
@@ -422,7 +329,7 @@ def start(parameters):
     # if there are usable start features
     if len(start_nhdplusids) > 0:
         # find tributaries that match parameters, if any
-        vaa_lists = get_vaa_lists(original_nhdflowline_name, original_vaatable_location, start_nhdplusids, parameter_all_levels,
+        vaa_lists = get_vaa_lists(config.original_nhdflowline_name, original_vaatable_location, start_nhdplusids, config.result_all_levels,
                                   parameters["max_level"])
         start_features_hydroseq_list = vaa_lists[0]
         vaa_path_id_list = vaa_lists[1]
@@ -441,53 +348,48 @@ def start(parameters):
             print(result_gdb_filename + ' created')
             arcpy.CreateFeatureDataset_management(
                 out_dataset_path=result_gdb_location,
-                out_name=result_dataset_name,
+                out_name=config.result_dataset_name,
                 spatial_reference=original_dataset_location)
-            print(result_dataset_name + ' dataset created')
+            print(config.result_dataset_name + ' dataset created')
             ### Processing Phase 3: Export Tributaries
             print('Processing Phase 3: Export Start Features and Tributaries')
             # TEST DISABLED
             # export_start_features(original_nhdflowline_location, start_nhdplusids, result_startfeatures_segments_location)
-            export_matching_paths(original_nhdflowline_name, original_vaatable_location, all_tributaries_paths,
+            export_matching_paths(config.original_nhdflowline_name, original_vaatable_location, all_tributaries_paths,
                                   result_tributaries_segments_location)
             ### Processing Phase 4: Add fields
             print('Processing Phase 4: Add fields')
-            # TEST DISABLED
-            # add_fields(result_startfeatures_segments_fcname, vaa_segment_fields)
-            # add_fields(result_startfeatures_segments_fcname, fcode_gnisid_fields)
-            # add_fields(result_startfeatures_segments_fcname, fcode_pathid_fields)
-            add_fields(result_tributaries_segments_location, vaa_segment_fields)
-            add_fields(result_tributaries_segments_location, fcode_gnisid_fields)
-            add_fields(result_tributaries_segments_location, fcode_pathid_fields)
+            add_fields(config.result_startfeatures_segments_fcname, config.vaa_segment_fields)
+            add_fields(config.result_startfeatures_segments_fcname, config.fcode_gnisid_fields)
+            add_fields(config.result_startfeatures_segments_fcname, config.fcode_pathid_fields)
             ### Processing Phase 5: Process fields
             print('Processing Phase 5: Process fields')
-            # TEST DISABLED
-            # copy_vaa_values(result_startfeatures_segments_fcname, original_vaatable_location, vaa_segment_fields)
-            # process_gfcode_fields(result_startfeatures_segments_fcname, fcode_gnisid_fields)
-            # process_pfcode_fields(result_startfeatures_segments_fcname, fcode_pathid_fields)
-            copy_vaa_values(result_tributaries_segments_location, original_vaatable_location, vaa_segment_fields)
-            process_gfcode_fields(result_tributaries_segments_location, fcode_gnisid_fields)
-            process_pfcode_fields(result_tributaries_segments_location, fcode_pathid_fields)
-            if parameter_dissolve_streams:
+            copy_vaa_values(config.result_startfeatures_segments_fcname, original_vaatable_location, config.vaa_segment_fields)
+            process_gfcode_fields(config.result_startfeatures_segments_fcname, config.fcode_gnisid_fields)
+            process_pfcode_fields(config.result_startfeatures_segments_fcname, config.fcode_pathid_fields)
+            if config.result_dissolve:
                 ### Processing Phase 6: Dissolve to streams
                 print('Processing Phase 6: Dissolve to streams')
-                # TEST DISABLED
-                # arcpy.SelectLayerByAttribute_management(
-                #     in_layer_or_view=result_startfeatures_segments_fcname,
-                #     selection_type="CLEAR_SELECTION")
-                # arcpy.Dissolve_management(
-                #     in_features=result_startfeatures_segments_fcname,
-                #     out_feature_class=result_startfeatures_dissolved_location,
-                #     dissolve_field=dissolve_fields)
                 arcpy.SelectLayerByAttribute_management(
-                    in_layer_or_view=result_tributaries_segments_fcname,
+                    in_layer_or_view=config.result_tributaries_segments_fcname,
                     selection_type="CLEAR_SELECTION")
                 arcpy.Dissolve_management(
-                    in_features=result_tributaries_segments_fcname,
+                    in_features=config.result_tributaries_segments_fcname,
                     out_feature_class=result_tributaries_dissolved_location,
-                    dissolve_field=dissolve_fields)
+                    dissolve_field=config.dissolve_fields)
         else:
             print('Checks complete - No tributaries found')
     else:
         print('Checks complete - No matching start features found')
     ### END PROCESSING ###
+
+### TEST IN ARCPY ###
+
+# nice_params = {
+#     "output_folder": 'C:/Workspace/',
+#     "gdb_location": 'D:/GCMRC/NHD Plus HR Process Datasets/00 Original Files/NHDPLUS_H_1501_HU4_GDB/NHDPLUS_H_1501_HU4_GDB.gdb',
+#     "start_features": 'D:/GCMRC/NHD Plus HR Process Datasets/Basin 15 Start Features/start_features_1501.shp',
+#     "max_level": 7
+# }
+#
+# start(nice_params)

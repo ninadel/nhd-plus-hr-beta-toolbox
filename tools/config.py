@@ -1,11 +1,12 @@
 # names of objects in the NHD dataset that are used by this tool
-# names of objects in the NHD dataset that are used by this tool
 original_dataset_name = 'Hydrography'
 original_nhdflowline_name = 'NHDFlowline'
 original_vaatable_name = 'NHDPlusFlowlineVAA'
 
 # names of resulting objects
 # these may become user defined parameters in the future
+result_all_levels = False
+result_dissolve = True
 result_suffix = '_RESULT'
 result_dataset_name = 'Tributaries'
 result_startfeatures_segments_fcname = 'StartFeatures_Segments'
