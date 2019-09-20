@@ -78,9 +78,9 @@ class Tributaries(object):
         arcpy.AddMessage('Max level: %s' % max_level)
 
         nice_params = {
-            "output_folder": parameters[0].valueAsText,
-            "gdb_location": parameters[1].valueAsText,
-            "start_features": parameters[2].valueAsText,
+            "output_folder": parameters[0].valueAsText.replace("\\", "/"),
+            "gdb_location": parameters[1].valueAsText.replace("\\", "/"),
+            "start_features": parameters[2].valueAsText.replace("\\", "/"),
             "max_level": int(parameters[3].valueAsText)
         }
 
