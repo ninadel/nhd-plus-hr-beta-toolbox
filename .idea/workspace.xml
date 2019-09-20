@@ -25,7 +25,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/tools" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/tools/tool.py" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -55,7 +55,9 @@
       <option name="presentableId" value="Default" />
       <updated>1567371178004</updated>
       <workItem from="1567371188081" duration="11436000" />
-      <workItem from="1567460163045" duration="10584000" />
+      <workItem from="1567460163045" duration="12656000" />
+      <workItem from="1568908898050" duration="13770000" />
+      <workItem from="1568995780745" duration="2720000" />
     </task>
     <servers />
   </component>

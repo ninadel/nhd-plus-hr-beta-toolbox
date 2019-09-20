@@ -359,22 +359,23 @@ def start(parameters):
                                   result_tributaries_segments_location)
             ### Processing Phase 4: Add fields
             print('Processing Phase 4: Add fields')
-            add_fields(config.result_startfeatures_segments_fcname, config.vaa_segment_fields)
-            add_fields(config.result_startfeatures_segments_fcname, config.fcode_gnisid_fields)
-            add_fields(config.result_startfeatures_segments_fcname, config.fcode_pathid_fields)
+            add_fields(result_tributaries_segments_location, config.vaa_segment_fields)
+            add_fields(result_tributaries_segments_location, config.fcode_gnisid_fields)
+            add_fields(result_tributaries_segments_location, config.fcode_pathid_fields)
+            arcpy.MakeFeatureLayer_management(result_tributaries_segments_location, "result_tributaries_segments_lyr")
             ### Processing Phase 5: Process fields
             print('Processing Phase 5: Process fields')
-            copy_vaa_values(config.result_startfeatures_segments_fcname, original_vaatable_location, config.vaa_segment_fields)
-            process_gfcode_fields(config.result_startfeatures_segments_fcname, config.fcode_gnisid_fields)
-            process_pfcode_fields(config.result_startfeatures_segments_fcname, config.fcode_pathid_fields)
+            copy_vaa_values("result_tributaries_segments_lyr", original_vaatable_location, config.vaa_segment_fields)
+            process_gfcode_fields("result_tributaries_segments_lyr", config.fcode_gnisid_fields)
+            process_pfcode_fields("result_tributaries_segments_lyr", config.fcode_pathid_fields)
             if config.result_dissolve:
                 ### Processing Phase 6: Dissolve to streams
                 print('Processing Phase 6: Dissolve to streams')
                 arcpy.SelectLayerByAttribute_management(
-                    in_layer_or_view=config.result_tributaries_segments_fcname,
+                    in_layer_or_view="result_tributaries_segments_lyr",
                     selection_type="CLEAR_SELECTION")
                 arcpy.Dissolve_management(
-                    in_features=config.result_tributaries_segments_fcname,
+                    in_features=result_tributaries_segments_location,
                     out_feature_class=result_tributaries_dissolved_location,
                     dissolve_field=config.dissolve_fields)
         else:
