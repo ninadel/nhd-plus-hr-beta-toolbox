@@ -317,7 +317,7 @@ def start(parameters):
     # determine name of result geodatabase
     result_gdb_filename = get_fname(result_gdb_location)
     # get pathnames of result feature classes
-    result_dataset_lo cation = get_location(result_gdb_location, config.result_dataset_name)
+    result_dataset_location = get_location(result_gdb_location, config.result_dataset_name)
     result_startfeatures_segments_location = get_location(result_gdb_location, config.result_startfeatures_segments_fcname)
     result_startfeatures_dissolved_location = get_location(result_gdb_location, config.result_startfeatures_dissolved_fcname)
     result_tributaries_segments_location = get_location(result_dataset_location, config.result_tributaries_segments_fcname)
