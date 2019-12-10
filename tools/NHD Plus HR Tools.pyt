@@ -67,15 +67,10 @@ class Tributaries(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        arcpy.AddMessage('\nParsing input parameters....\n')
         output_folder = parameters[0].valueAsText
-        arcpy.AddMessage('Output Folder: %s' % output_folder)
         gdb_location = parameters[1].valueAsText
-        arcpy.AddMessage('GDB Location: %s' % gdb_location)
         start_features = parameters[2].valueAsText
-        arcpy.AddMessage('Start features: %s' % start_features)
         max_level = parameters[3].valueAsText
-        arcpy.AddMessage('Max level: %s' % max_level)
 
         nice_params = {
             "output_folder": parameters[0].valueAsText.replace("\\", "/"),

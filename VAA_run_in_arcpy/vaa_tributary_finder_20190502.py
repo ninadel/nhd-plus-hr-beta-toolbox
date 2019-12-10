@@ -38,8 +38,8 @@ import arcpy, os, time
 
 ### START GLOBAL PARAMETERS ###
 parameter_output_location = 'C:/Workspace/'
-parameter_gdb_location = 'D:/GCMRC/NHD Plus HR Process Datasets/00 Original Files/NHDPLUS_H_1501_HU4_GDB/NHDPLUS_H_1501_HU4_GDB.gdb'
-parameter_start_feature = 'D:/GCMRC/NHD Plus HR Process Datasets/Basin 15 Start Features/start_features_1501.shp'
+parameter_gdb_location = 'D:/GCMRC/NHD Plus HR Process Datasets/00 Original Files/NHDPLUS_H_1401_HU4_GDB/NHDPLUS_H_1401_HU4_GDB.gdb'
+parameter_start_feature = 'D:/GCMRC/NHD Plus HR Process Datasets/Basin 14 Start Features/start_features_1401.shp'
 parameter_all_levels = False
 parameter_max_level = 7
 parameter_dissolve_streams = True
