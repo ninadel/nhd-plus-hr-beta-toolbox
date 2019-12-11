@@ -1,8 +1,7 @@
-# NHD Plus HR Tributary Finder v6
-# Author: Nina del Rosario
-# Last updated: 9/19/19
-# Dataset description: https://www.usgs.gov/core-science-systems/ngp/national-hydrography/nhdplus-high-resolution
-# Status: Revising from vaa_tributary_finder_20100502.py
+# NHD Plus HR Tools / Tributaries
+# Author: Nina del Rosario (nina.del@gmail.com)
+# Last updated: 12/11/2019
+# NHD Plus HR description: https://www.usgs.gov/core-science-systems/ngp/national-hydrography/nhdplus-high-resolution
 
 import arcpy
 import os
