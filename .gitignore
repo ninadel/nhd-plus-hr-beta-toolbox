@@ -98,3 +98,10 @@ ENV/
 # mypy
 .mypy_cache/
 
+#PyCharm
+.pyc
+
+#ArcGIS xml files
+.pyt.xml
+
+
