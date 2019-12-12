@@ -103,5 +103,6 @@ ENV/
 
 #ArcGIS xml files
 .pyt.xml
+.idea
 
 
