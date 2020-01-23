@@ -1,15 +1,19 @@
 # NHD Plus HR Beta Toolbox (Tributaries Tool)
 
 ## Overview
-The purpose of the tool, 
+This tool identifies tributary streams within the NHD Plus High Resolution dataset (NHD Plus HR, currently in beta) and exports them to a new results dataset. 
+Tributary identification is accomplished by joining the VAA (value-added attribute) table to the NHDFlowline feature class and analyzing the relationships between the different streams. 
 
-Details about the source dataset, beta version, link
+Two versions of the tributaries are exported: in the first version the streams segments remain discrete and in the second version the segments are merged into streams. 
+The resulting feature classes keep important attribute fields from the originating files and add additional calculated fields. 
 
-What #### means in these instructions
+For the purposes of these instructions, #### represents the HUC4 (Hydrologic Unit Code), which will vary with each watershed. 
 
 ## Data used by this tool
 
 ### How to download NHD Plus HR data
+The NHD Plus HR dataset can be downloaded from https://viewer.nationalmap.gov/basic/?basemap=b1&category=nhd&title=NHD%20View. 
+
 Go to national map website,
 search for data for region of interest (using code or map),
 download vector file (zip), unzip

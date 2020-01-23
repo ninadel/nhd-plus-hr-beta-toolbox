@@ -99,6 +99,7 @@ ENV/
 .mypy_cache/
 
 #PyCharm
+/.idea
 .pyc
 
 #ArcGIS xml files
