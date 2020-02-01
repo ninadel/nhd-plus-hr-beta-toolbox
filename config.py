@@ -9,8 +9,8 @@ result_all_levels = False
 result_dissolve = True
 result_suffix = '_RESULT'
 result_dataset_name = 'Tributaries'
-result_startfeatures_segments_fcname = 'StartFeatures_Segments'
-result_startfeatures_dissolved_fcname = 'StartFeatures_Streams'
+# result_startfeatures_segments_fcname = 'StartFeatures_Segments'
+# result_startfeatures_dissolved_fcname = 'StartFeatures_Streams'
 result_tributaries_segments_fcname = 'Tributaries_Segments'
 result_tributaries_dissolved_fcname = 'Tributaries_Streams'
 
