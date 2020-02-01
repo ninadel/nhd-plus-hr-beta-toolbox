@@ -14,11 +14,14 @@ For the purposes of these instructions, #### represents the HUC4 (Hydrologic Uni
 ### How to download NHD Plus HR data
 The NHD Plus HR dataset can be downloaded from https://viewer.nationalmap.gov/basic/?basemap=b1&category=nhd&title=NHD%20View. 
 
-Go to national map website,
-search for data for region of interest (using code or map),
-download vector file (zip), unzip
+From this website, datasets can be downloaded using the following steps:
+1. Select NHDPlus HR under Product Search Filter
+2. Find the region of interest using either the HUC4 number (by selecting Advanced Search Options) or the map tool
+3. When the dataset of interest is located, select the Download Vector link (this will download a zip file)
+4. (unzipping the file...)
 
 ### Files used by the tool
+This script using the NHDFlowline feature class (under Hydrography...) and the (VAA table)
 NHDFlowline, feature class, 
 VAA table, join on NHDPlusID field, where to find more information on VAA
 
