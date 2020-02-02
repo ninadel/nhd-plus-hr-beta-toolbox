@@ -16,6 +16,7 @@ def get_location(parent, fname, extension = '', dir_slash = '/'):
     return location
 
 # given a path, returns a feature class name (strips file extension if there is one)
+# add option to keep suffix
 def get_fname(location):
     fname = location[location.rfind('/') + 1::]
     if '.' in fname:
@@ -32,6 +33,7 @@ def get_nhdplusids(fc):
 
 # takes start features, finds matching features in input feature class
 def find_start_features(inputfc_location, startfeatures_location):
+    arcpy.AddMessage('Cross checking start features...')
     inputfc_name = get_fname(inputfc_location)
     arcpy.MakeFeatureLayer_management(
         in_features=inputfc_location,
@@ -43,9 +45,12 @@ def find_start_features(inputfc_location, startfeatures_location):
         select_features=startfeatures_location)
     ## test case - if there are start features
     start_feature_count_str = arcpy.GetCount_management(inputfc_name)[0]
+    # internal check
+    arcpy.AddMessage(start_feature_count_str + ': start_feature_count_str')
     if int(start_feature_count_str) > 0:
         start_nhdplusids = get_nhdplusids(inputfc_name)
-        arcpy.AddMessage('Feedback: ' + start_feature_count_str + ' features found. (Check?)')
+        # add message: start features out of ... features
+        arcpy.AddMessage('Feedback: ' + start_feature_count_str + ' start features found. (Check?)')
     else:
         start_nhdplusids = []
     arcpy.SelectLayerByAttribute_management(
@@ -149,6 +154,7 @@ def get_all_tributaries_from_path(starting_tributaries, downstream_path_list):
 
 # exports tributary segments to output dataset
 def export_matching_paths(inputfc, vaa_table_location, all_tributaries_path_list, output_location):
+    arcpy.AddMessage('Exporting tributaries...')
     all_tributaries_path_list_str = '(' + ', '.join([str(int(i)) for i in all_tributaries_path_list]) + ')'
     arcpy.AddJoin_management(
         in_layer_or_view=inputfc,
@@ -232,14 +238,14 @@ def get_cursor_list(fc, fields, unique = True):
 
 # calculates gfcode_fields for fc
 def process_gfcode_fields(fc, gfcode_fields):
-    arcpy.AddMessage('Processing G FCode fields for ' + fc)
+    arcpy.AddMessage('Processing G FCode fields...')
     cursor_list = get_cursor_list(fc, ['FCode', 'GNIS_ID', 'LevelPathI'])
     for field in gfcode_fields:
         fieldname = field[0]
         nullgnisid_pathid_list = []
         pathid_list = []
         gnisid_list = []
-        arcpy.AddMessage('Processing field ' + field[0])
+        arcpy.AddMessage('Processing field ' + field[0] + '...')
         fcode_value = int(fieldname[1::])
         matching_fcode_list = list(filter(lambda x: x[0] == fcode_value, cursor_list))
         for row in matching_fcode_list:
@@ -250,6 +256,7 @@ def process_gfcode_fields(fc, gfcode_fields):
             else:
                 gnisid_list.append(gnisid)
                 pathid_list.append(pathid)
+        # internal check ?
         if len(nullgnisid_pathid_list) > 0:
             arcpy.SelectLayerByAttribute_management(
                 in_layer_or_view=fc,
@@ -260,6 +267,7 @@ def process_gfcode_fields(fc, gfcode_fields):
                 in_table=fc,
                 field=fieldname,
                 expression=1)
+        # internal check ?
         if len(gnisid_list) > 0:
             arcpy.SelectLayerByAttribute_management(
                 in_layer_or_view=fc,
@@ -276,7 +284,7 @@ def process_gfcode_fields(fc, gfcode_fields):
 
 # calculates pfcode_fields for fc
 def process_pfcode_fields(fc, pfcode_fields):
-    arcpy.AddMessage('Processing P FCode fields for ' + fc)
+    arcpy.AddMessage('Processing P FCode fields...')
     cursor_list = get_cursor_list(fc, ['FCode', 'LevelPathI'])
     for field in pfcode_fields:
         fieldname = field[0]
@@ -287,6 +295,7 @@ def process_pfcode_fields(fc, pfcode_fields):
         for row in matching_fcode_list:
             pathid = int(row[1])
             pathid_list.append(pathid)
+        # internal check ?
         if len(pathid_list) > 0:
             arcpy.SelectLayerByAttribute_management(
                 in_layer_or_view=fc,
@@ -303,10 +312,10 @@ def process_pfcode_fields(fc, pfcode_fields):
 ### END FUNCTIONS ###
 
 def start(parameters):
-    arcpy.AddMessage('Feedback: Input parameter: Workspace: ' + arcpy.env.workspace)
-    arcpy.AddMessage('Feedback: Input parameter: GDB location: ' + parameters["gdb_location"])
-    arcpy.AddMessage('Feedback: Input parameter: Start features: ' + parameters["start_features"])
-    arcpy.AddMessage('Feedback: Input parameter: Stream level: ' + str(parameters["max_level"]))
+    arcpy.AddMessage('Workspace: ' + arcpy.env.workspace)
+    arcpy.AddMessage('GDB location: ' + parameters["gdb_location"])
+    arcpy.AddMessage('Start features: ' + parameters["start_features"])
+    arcpy.AddMessage('Stream level: ' + str(parameters["max_level"]))
     ### START PROCESSING ###
     ### Processing Phase 0: Create local parameters
     arcpy.env.workspace = parameters["output_folder"]
@@ -325,16 +334,17 @@ def start(parameters):
     # determine path of result directory
     result_gdb_location = get_location(result_subdir_location, result_rootname, '.gdb')
     # determine name of result geodatabase
+    # add new parameter to keep suffix
     result_gdb_filename = get_fname(result_gdb_location)
     # get pathnames of result feature classes
     result_dataset_location = get_location(result_gdb_location, config.result_dataset_name)
     result_tributaries_segments_location = get_location(result_dataset_location, config.result_tributaries_segments_fcname)
     result_tributaries_dissolved_location = get_location(result_dataset_location, config.result_tributaries_dissolved_fcname)
     ### Processing Phase 1: Pre-tests
-    arcpy.AddMessage('Cross checking start features...')
     # do usable start features exist
     start_nhdplusids = find_start_features(original_nhdflowline_location, parameters["start_features"])
     # if there are usable start features
+    # internal check ?
     if len(start_nhdplusids) > 0:
         # find tributaries that match parameters, if any
         arcpy.AddMessage('Searching for tributaries to stream level ' + str(parameters["max_level"]) + "...")
@@ -343,44 +353,52 @@ def start(parameters):
         start_features_hydroseq_list = vaa_lists[0]
         vaa_path_id_list = vaa_lists[1]
         vaa_hydroseq_list = vaa_lists[2]
-        arcpy.AddMessage(str(len(vaa_path_id_list)) + ' tributaries found')
+        # internal check
+        arcpy.AddMessage(str(len(vaa_path_id_list)) + ': str(len(vaa_path_id_list))')
+        # internal check
+        arcpy.AddMessage(str(len(vaa_hydroseq_list)) + ': str(len(vaa_hydroseq_list))')
+        # check tributary count - is vaa_path_id_list right?
+        # arcpy.AddMessage(str(len(vaa_path_id_list)) + ' tributaries found')
         starting_tributaries_paths = get_starting_tributaries(start_features_hydroseq_list, vaa_hydroseq_list)
         all_tributaries_paths = get_all_tributaries_from_path(starting_tributaries_paths, vaa_path_id_list)
+        # internal check
+        arcpy.AddMessage(str(len(all_tributaries_paths)) + ': str(len(all_tributaries_paths))')
         # if tributaries exist
         if len(all_tributaries_paths) > 0:
             ### Processing Phase 2: Prepare files
             os.mkdir(result_subdir_location)
             # add message
-            arcpy.AddMessage('Feedback: ' + result_rootname + 'directory created')
+            arcpy.AddMessage(result_rootname + ' directory created.')
             arcpy.CreateFileGDB_management(
                 out_folder_path=result_subdir_location,
                 out_name=result_gdb_filename,
                 out_version="CURRENT")
-            arcpy.AddMessage(result_gdb_filename + ' geodatabase created')
+            arcpy.AddMessage(result_gdb_filename + ' geodatabase created.')
             arcpy.CreateFeatureDataset_management(
                 out_dataset_path=result_gdb_location,
                 out_name=config.result_dataset_name,
                 spatial_reference=original_dataset_location)
-            arcpy.AddMessage('Feedback: ' + config.result_dataset_name + ' dataset created')
+            arcpy.AddMessage(config.result_dataset_name + ' dataset created.')
             ### Processing Phase 3: Export Tributaries
-            arcpy.AddMessage('Feedback: Exporting tributaries...')
             export_matching_paths(config.original_nhdflowline_name, original_vaatable_location, all_tributaries_paths,
                                   result_tributaries_segments_location)
             # add message
+            # internal check
+            arcpy.AddMessage(config.result_tributaries_segments_fcname + ': config.result_tributaries_segments_fcname')
             ### Processing Phase 4: Add fields
-            arcpy.AddMessage('Feedback: Adding fields...')
+            arcpy.AddMessage('Adding fields...')
             add_fields(result_tributaries_segments_location, config.vaa_segment_fields)
             add_fields(result_tributaries_segments_location, config.fcode_gnisid_fields)
             add_fields(result_tributaries_segments_location, config.fcode_pathid_fields)
             arcpy.MakeFeatureLayer_management(result_tributaries_segments_location, "result_tributaries_segments_lyr")
             ### Processing Phase 5: Process fields
-            arcpy.AddMessage('Feedback: Calculating fields...')
+            arcpy.AddMessage('Calculating fields...')
             copy_vaa_values("result_tributaries_segments_lyr", original_vaatable_location, config.vaa_segment_fields)
             process_gfcode_fields("result_tributaries_segments_lyr", config.fcode_gnisid_fields)
             process_pfcode_fields("result_tributaries_segments_lyr", config.fcode_pathid_fields)
             if config.result_dissolve:
                 ### Processing Phase 6: Dissolve to streams
-                arcpy.AddMessage('Feedback: Dissolving segments to streams...')
+                arcpy.AddMessage('Dissolving result segments to result streams...')
                 arcpy.SelectLayerByAttribute_management(
                     in_layer_or_view="result_tributaries_segments_lyr",
                     selection_type="CLEAR_SELECTION")
