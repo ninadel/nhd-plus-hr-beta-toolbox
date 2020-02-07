@@ -7,7 +7,7 @@ Tributary identification is accomplished by joining the VAA (value-added attribu
 Two versions of the tributaries are exported: in the first version the streams segments remain discrete and in the second version the segments are merged into streams. 
 The resulting feature classes keep important attribute fields from the originating files and add additional calculated fields. 
 
-For the purposes of these instructions, #### represents the HUC4 (Hydrologic Unit Code), which will vary with each watershed. 
+For the purposes of these instructions, [HUC4] represents the Hydrologic Unit Code. These 4-digit codes identify watershed subregions (more information can be found at https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map). 
 
 ## Data used by this tool
 
@@ -26,19 +26,19 @@ NHDFlowline, feature class,
 VAA table, join on NHDPlusID field, where to find more information on VAA
 
 ## Parameters
-* Output folder, 
-subdir created
-* GDB location, 
-should be unmodified from GDB downloaded from TNM
-* Start features, 
-derived from NHD flowline and must align, 
-how to create start features, 
-can be continuous or discontinuous, 
-how to create a start feature shapefile (join VAA table using NHDPlusID)
-* Max level, 
-stream level concept, 
-link to USGS docs, 
-examples (single stream to find primary and secondary tributaries, multi stream with different levels)
+1. Output folder - this is where results will be saved. 
+    * A subfolder named NHDPLUS_H_[HUC4]_HU4_GDB_RESULT will be created here. 
+2. NHDPlus HR geodatabase location - this is the geodatabase downloaded from the steps above. 
+    * For best results, this geodatabase should be the unmodified version downloaded from the NHD website. 
+3. Shapefile of stream(s) to find tributaries for - these linear features must align with streams from the NHDFlowline 
+feature class in the above geodatabase
+    * For best results, select streams from the NHDFlowline feature class and export them to a shapefile. 
+    * These stream(s) can be continuous or discontinuous (example, steam level)
+4. Maximum stream level for tributary search - based on stream level, this is the cutoff point for finding tributaries.  
+    * For example, if a starting stream had a stream level of 4, setting this parameter to 5 will find the primary 
+    tributaries for this stream. Setting this parameter to 6 would find primary and secondary tributaries. 
+    * See https://usgs-mrs.cr.usgs.gov/NHDHelp/WebHelp/NHD_Help/Introduction_to_the_NHD/Feature_Attribution/Stream_Levels.htm 
+    for a description of stream levels.
 
 ## Outputs
 
@@ -59,5 +59,6 @@ examples (single stream to find primary and secondary tributaries, multi stream 
 * P FCode fields, 
 example of where P FCode and G FCode fields may differ
 
-## Sample data
-Where to find sample data
+## Reference links
+* https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map
+* https://usgs-mrs.cr.usgs.gov/NHDHelp/WebHelp/NHD_Help/Introduction_to_the_NHD/Feature_Attribution/Stream_Levels.htm
