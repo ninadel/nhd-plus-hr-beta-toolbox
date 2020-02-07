@@ -33,7 +33,6 @@ def get_nhdplusids(fc):
 
 # takes start features, finds matching features in input feature class
 def find_start_features(inputfc_location, startfeatures_location):
-    arcpy.AddMessage('Cross checking start features...')
     inputfc_name = get_fname(inputfc_location)
     arcpy.MakeFeatureLayer_management(
         in_features=inputfc_location,
@@ -45,12 +44,8 @@ def find_start_features(inputfc_location, startfeatures_location):
         select_features=startfeatures_location)
     ## test case - if there are start features
     start_feature_count_str = arcpy.GetCount_management(inputfc_name)[0]
-    # internal check
-    arcpy.AddMessage(start_feature_count_str + ': start_feature_count_str')
     if int(start_feature_count_str) > 0:
         start_nhdplusids = get_nhdplusids(inputfc_name)
-        # add message: start features out of ... features
-        arcpy.AddMessage('Feedback: ' + start_feature_count_str + ' start features found. (Check?)')
     else:
         start_nhdplusids = []
     arcpy.SelectLayerByAttribute_management(
@@ -154,7 +149,6 @@ def get_all_tributaries_from_path(starting_tributaries, downstream_path_list):
 
 # exports tributary segments to output dataset
 def export_matching_paths(inputfc, vaa_table_location, all_tributaries_path_list, output_location):
-    arcpy.AddMessage('Exporting tributaries...')
     all_tributaries_path_list_str = '(' + ', '.join([str(int(i)) for i in all_tributaries_path_list]) + ')'
     arcpy.AddJoin_management(
         in_layer_or_view=inputfc,
@@ -173,14 +167,6 @@ def export_matching_paths(inputfc, vaa_table_location, all_tributaries_path_list
     arcpy.CopyFeatures_management(
         in_features=inputfc,
         out_feature_class=output_location)
-    # ERROR
-    # result_segment_count = arcpy.GetCount_management(config.result_tributaries_segments_fcname)[0]
-    # arcpy.AddMessage(
-    #     'Feedback: ' +
-    #     result_segment_count +
-    #     ' tributary segments found. Segments exported to ' +
-    #     config.result_tributaries_segments_fcname +
-    #     '.')
 
 # adds fields to fc
 def add_fields(fc, field_list):
@@ -191,7 +177,6 @@ def add_fields(fc, field_list):
             field_type=field[1],
             field_alias=field[2]
         )
-        arcpy.AddMessage(field[0] + ' field added.')
         # pause is inserted to avoid errors
         time.sleep(6)
 
@@ -210,7 +195,7 @@ def copy_vaa_values(fc, vaa_table_location, vaa_fields):
             in_table=fc,
             field=fieldname,
             expression='[' + vaa_table_name + '.{0}]'.format(field[0]))
-        arcpy.AddMessage(field[0] + ' calculated.')
+        arcpy.AddMessage(field[0] + ' field added.')
     arcpy.RemoveJoin_management(
         in_layer_or_view=fc)
 
@@ -238,14 +223,13 @@ def get_cursor_list(fc, fields, unique = True):
 
 # calculates gfcode_fields for fc
 def process_gfcode_fields(fc, gfcode_fields):
-    arcpy.AddMessage('Processing G FCode fields...')
     cursor_list = get_cursor_list(fc, ['FCode', 'GNIS_ID', 'LevelPathI'])
     for field in gfcode_fields:
         fieldname = field[0]
         nullgnisid_pathid_list = []
         pathid_list = []
         gnisid_list = []
-        arcpy.AddMessage('Processing field ' + field[0] + '...')
+        arcpy.AddMessage(field[0] + ' field added.')
         fcode_value = int(fieldname[1::])
         matching_fcode_list = list(filter(lambda x: x[0] == fcode_value, cursor_list))
         for row in matching_fcode_list:
@@ -284,18 +268,16 @@ def process_gfcode_fields(fc, gfcode_fields):
 
 # calculates pfcode_fields for fc
 def process_pfcode_fields(fc, pfcode_fields):
-    arcpy.AddMessage('Processing P FCode fields...')
     cursor_list = get_cursor_list(fc, ['FCode', 'LevelPathI'])
     for field in pfcode_fields:
         fieldname = field[0]
         pathid_list = []
-        arcpy.AddMessage('Processing field ' + field[0])
+        arcpy.AddMessage(field[0] + ' field added.')
         fcode_value = int(field[0][1::])
         matching_fcode_list = list(filter(lambda x: x[0] == fcode_value, cursor_list))
         for row in matching_fcode_list:
             pathid = int(row[1])
             pathid_list.append(pathid)
-        # internal check ?
         if len(pathid_list) > 0:
             arcpy.SelectLayerByAttribute_management(
                 in_layer_or_view=fc,
@@ -312,7 +294,7 @@ def process_pfcode_fields(fc, pfcode_fields):
 ### END FUNCTIONS ###
 
 def start(parameters):
-    arcpy.AddMessage('Workspace: ' + arcpy.env.workspace)
+    arcpy.AddMessage('Workspace: ' + parameters["output_folder"])
     arcpy.AddMessage('GDB location: ' + parameters["gdb_location"])
     arcpy.AddMessage('Start features: ' + parameters["start_features"])
     arcpy.AddMessage('Stream level: ' + str(parameters["max_level"]))
@@ -342,29 +324,22 @@ def start(parameters):
     result_tributaries_dissolved_location = get_location(result_dataset_location, config.result_tributaries_dissolved_fcname)
     ### Processing Phase 1: Pre-tests
     # do usable start features exist
+    arcpy.AddMessage('Cross checking start features...')
     start_nhdplusids = find_start_features(original_nhdflowline_location, parameters["start_features"])
     # if there are usable start features
-    # internal check ?
     if len(start_nhdplusids) > 0:
         # find tributaries that match parameters, if any
-        arcpy.AddMessage('Searching for tributaries to stream level ' + str(parameters["max_level"]) + "...")
         vaa_lists = get_vaa_lists(config.original_nhdflowline_name, original_vaatable_location, start_nhdplusids, config.result_all_levels,
                                   parameters["max_level"])
         start_features_hydroseq_list = vaa_lists[0]
         vaa_path_id_list = vaa_lists[1]
         vaa_hydroseq_list = vaa_lists[2]
-        # internal check
-        arcpy.AddMessage(str(len(vaa_path_id_list)) + ': str(len(vaa_path_id_list))')
-        # internal check
-        arcpy.AddMessage(str(len(vaa_hydroseq_list)) + ': str(len(vaa_hydroseq_list))')
-        # check tributary count - is vaa_path_id_list right?
-        # arcpy.AddMessage(str(len(vaa_path_id_list)) + ' tributaries found')
         starting_tributaries_paths = get_starting_tributaries(start_features_hydroseq_list, vaa_hydroseq_list)
+        arcpy.AddMessage('Searching for tributaries up to stream level ' + str(parameters["max_level"]) + "...")
         all_tributaries_paths = get_all_tributaries_from_path(starting_tributaries_paths, vaa_path_id_list)
-        # internal check
-        arcpy.AddMessage(str(len(all_tributaries_paths)) + ': str(len(all_tributaries_paths))')
         # if tributaries exist
         if len(all_tributaries_paths) > 0:
+            arcpy.AddMessage('Tributaries found.')
             ### Processing Phase 2: Prepare files
             os.mkdir(result_subdir_location)
             # add message
@@ -380,25 +355,27 @@ def start(parameters):
                 spatial_reference=original_dataset_location)
             arcpy.AddMessage(config.result_dataset_name + ' dataset created.')
             ### Processing Phase 3: Export Tributaries
+            arcpy.AddMessage('Exporting tributaries...')
             export_matching_paths(config.original_nhdflowline_name, original_vaatable_location, all_tributaries_paths,
                                   result_tributaries_segments_location)
-            # add message
-            # internal check
-            arcpy.AddMessage(config.result_tributaries_segments_fcname + ': config.result_tributaries_segments_fcname')
+            tributary_segment_count = arcpy.GetCount_management(result_tributaries_segments_location)[0]
+            arcpy.AddMessage(tributary_segment_count +
+                             " tributary segments exported to " +
+                             config.result_dataset_name + '/' +
+                             config.result_tributaries_segments_fcname + '.')
             ### Processing Phase 4: Add fields
-            arcpy.AddMessage('Adding fields...')
             add_fields(result_tributaries_segments_location, config.vaa_segment_fields)
             add_fields(result_tributaries_segments_location, config.fcode_gnisid_fields)
             add_fields(result_tributaries_segments_location, config.fcode_pathid_fields)
             arcpy.MakeFeatureLayer_management(result_tributaries_segments_location, "result_tributaries_segments_lyr")
             ### Processing Phase 5: Process fields
-            arcpy.AddMessage('Calculating fields...')
+            arcpy.AddMessage('Processing fields...')
             copy_vaa_values("result_tributaries_segments_lyr", original_vaatable_location, config.vaa_segment_fields)
             process_gfcode_fields("result_tributaries_segments_lyr", config.fcode_gnisid_fields)
             process_pfcode_fields("result_tributaries_segments_lyr", config.fcode_pathid_fields)
             if config.result_dissolve:
                 ### Processing Phase 6: Dissolve to streams
-                arcpy.AddMessage('Dissolving result segments to result streams...')
+                arcpy.AddMessage('Dissolving segments to streams...')
                 arcpy.SelectLayerByAttribute_management(
                     in_layer_or_view="result_tributaries_segments_lyr",
                     selection_type="CLEAR_SELECTION")
@@ -406,13 +383,13 @@ def start(parameters):
                     in_features=result_tributaries_segments_location,
                     out_feature_class=result_tributaries_dissolved_location,
                     dissolve_field=config.dissolve_fields)
-                # add message
-                # result_stream_count = arcpy.GetCount_management(config.result_tributaries_dissolved_fcname)[0]
-                # arcpy.AddMessage('Feedback: Segments dissolved to ' +
-                #                  result_stream_count +
-                #                  ' streams. Streams exported to '
-                #                  + config.result_tributaries_dissolved_fcname)
-                # COMPLETE
+                # internal check
+                tributary_stream_count = arcpy.GetCount_management(result_tributaries_dissolved_location)[
+                                     0]
+                arcpy.AddMessage(tributary_stream_count +
+                                 " tributary streams exported to " +
+                                 config.result_dataset_name + '/' +
+                                 config.result_tributaries_dissolved_fcname + '.')
         else:
             arcpy.AddMessage('Checks complete - No tributaries found')
     else:
