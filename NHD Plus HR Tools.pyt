@@ -29,19 +29,19 @@ class Tributaries(object):
                                  direction = 'Input')
 
         gdb_location = arcpy.Parameter(
-            displayName="GDB Location",
+            displayName="NHDPlus HR geodatabase",
             name="gdb_location",
             datatype="DEWorkspace",
             parameterType="Required",
             direction="Input")
 
-        start_features = arcpy.Parameter(displayName = 'Start Features',
+        start_features = arcpy.Parameter(displayName = 'Shapefile of streams to find tributaries for',
                                  name = 'start_features',
                                  datatype = 'DEShapefile',
                                  parameterType = 'Required',
                                  direction = 'Input')
 
-        max_level = arcpy.Parameter(displayName = 'Max stream level',
+        max_level = arcpy.Parameter(displayName = 'Maximum stream level for tributary search',
                                  name = 'max_level',
                                  datatype = 'GPLong',
                                  parameterType = 'Required',

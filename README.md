@@ -28,9 +28,9 @@ VAA table, join on NHDPlusID field, where to find more information on VAA
 ## Parameters
 1. Output folder - this is where results will be saved. 
     * A subfolder named NHDPLUS_H_[HUC4]_HU4_GDB_RESULT will be created here. 
-2. NHDPlus HR geodatabase location - this is the geodatabase downloaded from the steps above. 
+2. NHDPlus HR geodatabase - this is the geodatabase downloaded from the steps above. 
     * For best results, this geodatabase should be the unmodified version downloaded from the NHD website. 
-3. Shapefile of stream(s) to find tributaries for - these linear features must align with streams from the NHDFlowline 
+3. Shapefile of streams to find tributaries for - these linear features must align with streams from the NHDFlowline 
 feature class in the above geodatabase
     * For best results, select streams from the NHDFlowline feature class and export them to a shapefile. 
     * These stream(s) can be continuous or discontinuous (example, steam level)
