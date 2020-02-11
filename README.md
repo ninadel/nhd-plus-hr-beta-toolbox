@@ -7,7 +7,7 @@ Tributary identification is accomplished by joining the VAA (value-added attribu
 Two versions of the tributaries are exported: in the first version the streams segments remain discrete and in the second version the segments are merged into streams. 
 The resulting feature classes keep important attribute fields from the originating files and add additional calculated fields. 
 
-For the purposes of these instructions, [HUC4] represents the Hydrologic Unit Code. These 4-digit codes identify watershed subregions (more information can be found at https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map). 
+For the purposes of these instructions, \[HUC4] represents the Hydrologic Unit Code. These 4-digit codes identify watershed subregions (more information can be found at https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map). 
 
 ## Data used by this tool
 
@@ -18,16 +18,15 @@ From this website, datasets can be downloaded using the following steps:
 1. Select NHDPlus HR under Product Search Filter
 2. Find the region of interest using either the HUC4 number (by selecting Advanced Search Options) or the map tool
 3. When the dataset of interest is located, select the Download Vector link (this will download a zip file)
-4. (unzipping the file...)
+4. The zip file unzips to a geodatabase, which is the main used by the script.
 
 ### Files used by the tool
-This script using the NHDFlowline feature class (under Hydrography...) and the (VAA table)
-NHDFlowline, feature class, 
-VAA table, join on NHDPlusID field, where to find more information on VAA
+This script uses the NHDFlowline feature class (under the Hydrography dataset) and the table NHDPlusFlowlineVAA.
+This script joins NHDFlowline and NHDPlusFlowlineVAA based on the field NHDPlusID.
 
 ## Parameters
 1. Output folder - this is where results will be saved. 
-    * A subfolder named NHDPLUS_H_[HUC4]_HU4_GDB_RESULT will be created here. 
+    * A subfolder named NHDPLUS_H_\[HUC4]_HU4_GDB_RESULT will be created here. 
 2. NHDPlus HR geodatabase - this is the geodatabase downloaded from the steps above. 
     * For best results, this geodatabase should be the unmodified version downloaded from the NHD website. 
 3. Shapefile of streams to find tributaries for - these linear features must align with streams from the NHDFlowline 
@@ -43,12 +42,66 @@ feature class in the above geodatabase
 ## Outputs
 
 ### Output files
-* Folder
-* Dataset
-* Segment feature class
-* Stream feature class, dissolved based on these fields...
+The following are outputs of this script:
+* In the output folder, a subfolder named NHDPLUS_H_\[HUC4]_HU4_GDB_RESULT 
+* In this subfolder, a geodatabase named NHDPLUS_H_\[HUC4]_HU4_GDB_RESULT.gdb   
+* In the geodatabase, a dataset named Tributaries
+* In the Tributaries dataset, a feature classes named Tributaries_Segments and Tributaries_Streams (Tributaries_Streams feature class is the dissolved version of Tributaries_Segments) 
 
 ### Output file fields
+
+#### Tributary_Segment fields
+In Tributary_Segments, the following fields are copied from NHDFlowline:
+* Permanent_Identifier
+* FDate
+* Resolution
+* GNIS_ID
+* GNIS_Name
+* LengthKM
+* ReachCode
+* FlowDir
+* WBArea_Permanent_Identifier
+* FType
+* FCode
+* MainPath
+* InNetwork
+* VisibilityFilter
+* Shape_Length
+* NHDPlusID
+* VPUID
+* Enabled
+
+In Tributary_Segments, the following fields are copied from NHDPlusFlowlineVAA:
+* StreamLeve
+* HydroSeq
+* LevelPathI
+* TerminalPa
+* UpLevelSeq
+* UpHydroSeq
+* DnLevelPat
+* DnHydroSeq
+
+In Tributary_Segments, the following fields are calculated:
+* G46000 (Description)
+* G46003 (Description)
+* G46006 (Description)
+* G46007 (Description)
+* G55800 (Description)
+* P46000 (Description)
+* P46003 (Description)
+* P46006 (Description)
+* P46007 (Description)
+* P55800 (Description)
+
+#### Tributary_Streams fields
+In Tributary_Streams, the following fields are copied from NHDFlowline:
+
+In Tributary_Streams, the following fields are copied from NHDPlusFlowlineVAA:
+*
+
+In Tributary_Streams, the following fields are calculated:
+*
+
 * tributary segment fields
     * fields copied from NHDFlowline
     * fields copied from VAA table
