@@ -20,6 +20,16 @@ From this website, datasets can be downloaded using the following steps:
 3. When the dataset of interest is located, select the Download Vector link (this will download a zip file)
 4. The zip file unzips to a geodatabase, which is the main used by the script.
 
+### FCodes
+Information about FCodes can be found at https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/NHDFlowline/NHDFlowline.htm. 
+
+The following FCodes are used by this script to classify stream segments: 
+* 46000 - STREAM/RIVER, feature type only: no attributes
+* 46003 - STREAM/RIVER, Hydrographic Category|intermittent
+* 46006 - STREAM/RIVER, Hydrographic Category|perennial
+* 46007 - STREAM/RIVER, Hydrographic Category|ephemeral
+* 55800 - ARTIFICIAL PATH, feature type only: no attributes
+
 ### Files used by the tool
 This script uses the NHDFlowline feature class (under the Hydrography dataset) and the table NHDPlusFlowlineVAA.
 This script joins NHDFlowline and NHDPlusFlowlineVAA based on the field NHDPlusID.
@@ -82,36 +92,41 @@ In Tributary_Segments, the following fields are copied from NHDPlusFlowlineVAA:
 * DnHydroSeq
 
 In Tributary_Segments, the following fields are calculated:
-* G46000 (Description)
-* G46003 (Description)
-* G46006 (Description)
-* G46007 (Description)
-* G55800 (Description)
-* P46000 (Description)
-* P46003 (Description)
-* P46006 (Description)
-* P46007 (Description)
-* P55800 (Description)
+* G46000 - this field will have the value of 1 if the collection of segments that share the same combination of GNIS_ID and LevelPathI contain at least one segment with the FCode 46000. 
+* G46003 - this field will have the value of 1 if the collection of segments that share the same combination of GNIS_ID and LevelPathI contain at least one segment with the FCode 46003. 
+* G46006 - this field will have the value of 1 if the collection of segments that share the same combination of GNIS_ID and LevelPathI contain at least one segment with the FCode 46006. 
+* G46007 - this field will have the value of 1 if the collection of segments that share the same combination of GNIS_ID and LevelPathI contain at least one segment with the FCode 46007. 
+* G55800 - this field will have the value of 1 if the collection of segments that share the same combination of GNIS_ID and LevelPathI contain at least one segment with the FCode 55800. 
+* P46000 - this field will have the value of 1 if the collection of segments that share the same LevelPathI contain at least one segment with the FCode 46000. 
+* P46003 - this field will have the value of 1 if the collection of segments that share the same LevelPathI contain at least one segment with the FCode 46003. 
+* P46006 - this field will have the value of 1 if the collection of segments that share the same LevelPathI contain at least one segment with the FCode 46006. 
+* P46007 - this field will have the value of 1 if the collection of segments that share the same LevelPathI contain at least one segment with the FCode 46007. 
+* P55800 - this field will have the value of 1 if the collection of segments that share the same LevelPathI contain at least one segment with the FCode 55800. 
 
-#### Tributary_Streams fields
-In Tributary_Streams, the following fields are copied from NHDFlowline:
+There is a subtle difference between the fields above with the prefix G and the fields above with the prefix P. 
+It is possible to have a physically continuous stream which has more than one GNIS_ID value 
+(for example, the stream may have portions with different names or named and unnamed portions).
+If interested in a portion of a stream that shares the same name, use fields with the prefix G. 
+If interested in a physically continuous stream regardless of name, use fields with the prefix P. 
 
-In Tributary_Streams, the following fields are copied from NHDPlusFlowlineVAA:
-*
-
-In Tributary_Streams, the following fields are calculated:
-*
-
-* tributary segment fields
-    * fields copied from NHDFlowline
-    * fields copied from VAA table
-* tributary stream fields
-    * fields copied from NHDFlowline
-    * fields copied from VAA table
-* G Fcode fields
-* P FCode fields, 
-example of where P FCode and G FCode fields may differ
+#### Tributary_Streams fields (dissolved)
+* To generate the Tributary_Streams feature class, the Tributary_Segments feature class is dissolved on the following fields:
+    * GNIS_ID
+    * GNIS_Name
+    * StreamLeve
+    * LevelPathI
+    * G46000
+    * G46003
+    * G46006
+    * G46007
+    * G55800
+    * P46000
+    * P46003
+    * P46006
+    * P46007
+    * P55800
 
 ## Reference links
 * https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map
+* https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/NHDFlowline/NHDFlowline.htm
 * https://usgs-mrs.cr.usgs.gov/NHDHelp/WebHelp/NHD_Help/Introduction_to_the_NHD/Feature_Attribution/Stream_Levels.htm
