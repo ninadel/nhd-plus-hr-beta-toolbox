@@ -20,6 +20,10 @@ From this website, datasets can be downloaded using the following steps:
 3. When the dataset of interest is located, select the Download Vector link (this will download a zip file)
 4. The zip file unzips to a geodatabase, which is the main used by the script.
 
+### Files used by the tool
+This script uses the NHDFlowline feature class (under the Hydrography dataset) and the table NHDPlusFlowlineVAA.
+This script joins NHDFlowline and NHDPlusFlowlineVAA based on the field NHDPlusID.
+
 ### FCodes
 Information about FCodes can be found at https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/NHDFlowline/NHDFlowline.htm. 
 
@@ -30,24 +34,22 @@ The following FCodes are used by this script to classify stream segments:
 * 46007 - STREAM/RIVER, Hydrographic Category|ephemeral
 * 55800 - ARTIFICIAL PATH, feature type only: no attributes
 
-### Files used by the tool
-This script uses the NHDFlowline feature class (under the Hydrography dataset) and the table NHDPlusFlowlineVAA.
-This script joins NHDFlowline and NHDPlusFlowlineVAA based on the field NHDPlusID.
-
 ## Parameters
 1. Output folder - this is where results will be saved. 
     * A subfolder named NHDPLUS_H_\[HUC4]_HU4_GDB_RESULT will be created here. 
-2. NHDPlus HR geodatabase - this is the geodatabase downloaded from the steps above. 
+2. NHDPlus HR geodatabase - this is the geodatabase downloaded from the NHD website using the steps above. 
     * For best results, this geodatabase should be the unmodified version downloaded from the NHD website. 
 3. Shapefile of streams to find tributaries for - these linear features must align with streams from the NHDFlowline 
 feature class in the above geodatabase
-    * For best results, select streams from the NHDFlowline feature class and export them to a shapefile. 
-    * These stream(s) can be continuous or discontinuous (example, steam level)
+    * For best results, select streams of interest from the NHDFlowline feature class and export them 
+    to a shapefile. This will ensure that the shapefile and the geodatabase align because they came from the same data source.
+    * These stream(s) can be continuous or discontinuous. For example, it is possible to run this script on two different streams 
+    that are disconnected but both in the same watershed subregion. 
 4. Maximum stream level for tributary search - based on stream level, this is the cutoff point for finding tributaries.  
     * For example, if a starting stream had a stream level of 4, setting this parameter to 5 will find the primary 
     tributaries for this stream. Setting this parameter to 6 would find primary and secondary tributaries. 
     * See https://usgs-mrs.cr.usgs.gov/NHDHelp/WebHelp/NHD_Help/Introduction_to_the_NHD/Feature_Attribution/Stream_Levels.htm 
-    for a description of stream levels.
+    for an explanation of stream levels.
 
 ## Outputs
 
@@ -108,6 +110,9 @@ It is possible to have a physically continuous stream which has more than one GN
 (for example, the stream may have portions with different names or named and unnamed portions).
 If interested in a portion of a stream that shares the same name, use fields with the prefix G. 
 If interested in a physically continuous stream regardless of name, use fields with the prefix P. 
+
+These calculated fields are useful for filtering streams by FCode type. For example, to exclude 
+streams that do not contain perennial segments, select features that have a P46006 value of 1 (FCode 46006 = perennial). 
 
 #### Tributary_Streams fields (dissolved)
 * To generate the Tributary_Streams feature class, the Tributary_Segments feature class is dissolved on the following fields:
