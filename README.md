@@ -25,7 +25,7 @@ This script uses the NHDFlowline feature class (under the Hydrography dataset) a
 This script joins NHDFlowline and NHDPlusFlowlineVAA based on the field NHDPlusID.
 
 ### FCodes
-Information about FCodes can be found at https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/NHDFlowline/NHDFlowline.htm. 
+Information about FCodes can be found at https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/Complete_FCode_List.htm. 
 
 The following FCodes are used by this script to classify stream segments: 
 * 46000 - STREAM/RIVER, feature type only: no attributes
@@ -33,6 +33,11 @@ The following FCodes are used by this script to classify stream segments:
 * 46006 - STREAM/RIVER, Hydrographic Category|perennial
 * 46007 - STREAM/RIVER, Hydrographic Category|ephemeral
 * 55800 - ARTIFICIAL PATH, feature type only: no attributes
+
+### NHDPlusFlowlineVAA fields
+This script analyzes and exports values from the table NHDPlusFlowlineVAA. Information about these fields can be found at:
+* https://www.fws.gov/r5gomp/gom/nhd-gom/NHDPLUS_UserGuide.pdf
+* https://www.usgs.gov/core-science-systems/ngp/national-hydrography/value-added-attributes-vaas.
 
 ## Parameters
 1. Output folder - this is where results will be saved. 
@@ -132,6 +137,10 @@ streams that do not contain perennial segments, select features that have a P460
     * P55800
 
 ## Reference links
-* https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map
-* https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/NHDFlowline/NHDFlowline.htm
-* https://usgs-mrs.cr.usgs.gov/NHDHelp/WebHelp/NHD_Help/Introduction_to_the_NHD/Feature_Attribution/Stream_Levels.htm
+* Overview of HUC4 codes: https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map
+* Overview of the NHDPlus dataset, including VAA fields: https://www.fws.gov/r5gomp/gom/nhd-gom/NHDPLUS_UserGuide.pdf
+* Overview of VAA fields: https://www.usgs.gov/core-science-systems/ngp/national-hydrography/value-added-attributes-vaas.
+* Overview of the NHDFlowline feature class https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/NHDFlowline/NHDFlowline.htm
+* Overview of FCodes https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/Complete_FCode_List.htm
+* Explanation of stream levels: https://usgs-mrs.cr.usgs.gov/NHDHelp/WebHelp/NHD_Help/Introduction_to_the_NHD/Feature_Attribution/Stream_Levels.htm
+* NHDPlus User Guide: https://www.fws.gov/r5gomp/gom/nhd-gom/NHDPLUS_UserGuide.pdf
