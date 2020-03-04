@@ -18,7 +18,7 @@ From this website, datasets can be downloaded using the following steps:
 1. Select NHDPlus HR under Product Search Filter
 2. Find the region of interest using either the HUC4 number (by selecting Advanced Search Options) or the map tool
 3. When the dataset of interest is located, select the Download Vector link (this will download a zip file)
-4. The zip file unzips to a geodatabase, which is the main used by the script.
+4. The zip file unzips to a geodatabase, which is the main input used by the script
 
 ### Files used by the tool
 This script uses the NHDFlowline feature class (under the Hydrography dataset) and the table NHDPlusFlowlineVAA.
@@ -49,7 +49,7 @@ feature class in the above geodatabase
     * For best results, select streams of interest from the NHDFlowline feature class and export them 
     to a shapefile. This will ensure that the shapefile and the geodatabase align because they came from the same data source.
     * These stream(s) can be continuous or discontinuous. For example, it is possible to run this script on two different streams 
-    that are disconnected but both in the same watershed subregion. 
+    that are disconnected but both exist in the same watershed subregion. 
 4. Maximum stream level for tributary search - based on stream level, this is the cutoff point for finding tributaries.  
     * For example, if a starting stream had a stream level of 4, setting this parameter to 5 will find the primary 
     tributaries for this stream. Setting this parameter to 6 would find primary and secondary tributaries. 
@@ -139,7 +139,7 @@ streams that do not contain perennial segments, select features that have a P460
 ## Reference links
 * Overview of HUC4 codes: https://www.usgs.gov/media/images/watershed-boundary-dataset-subregions-map
 * Overview of the NHDPlus dataset, including VAA fields: https://www.fws.gov/r5gomp/gom/nhd-gom/NHDPLUS_UserGuide.pdf
-* Overview of VAA fields: https://www.usgs.gov/core-science-systems/ngp/national-hydrography/value-added-attributes-vaas.
+* Overview of VAA fields: https://www.usgs.gov/core-science-systems/ngp/national-hydrography/value-added-attributes-vaas
 * Overview of the NHDFlowline feature class https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/NHDFlowline/NHDFlowline.htm
 * Overview of FCodes https://nhd.usgs.gov/userGuide/Robohelpfiles/NHD_User_Guide/Feature_Catalog/Hydrography_Dataset/Complete_FCode_List.htm
 * Explanation of stream levels: https://usgs-mrs.cr.usgs.gov/NHDHelp/WebHelp/NHD_Help/Introduction_to_the_NHD/Feature_Attribution/Stream_Levels.htm
