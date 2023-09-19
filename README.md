@@ -12,7 +12,7 @@ For the purposes of these instructions, \[HUC4] represents the Hydrologic Unit C
 ## Data used by this tool
 
 ### How to download NHD Plus HR data
-The NHD Plus HR dataset can be downloaded from https://viewer.nationalmap.gov/basic/?basemap=b1&category=nhd&title=NHD%20View. 
+The NHD Plus HR dataset can be downloaded from [https://viewer.nationalmap.gov/basic/?basemap=b1&category=nhd&title=NHD%20View](https://www.usgs.gov/national-hydrography/nhdplus-high-resolution). 
 
 From this website, datasets can be downloaded using the following steps:
 1. Select NHDPlus HR under Product Search Filter
